@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace ServersLib
 {
-
     public class Servers
     {
-        private static Servers instance;
+        // lazy instantiation
+        // private static Servers instance;
+
+        // eager instantiation
+        private static readonly Servers instance = new Servers();
         private static readonly object lockObject = new object();
 
         private List<string> serverList;
@@ -25,30 +28,12 @@ namespace ServersLib
             {
                 lock (lockObject)
                 {
-                    return instance ?? (instance = new Servers());
+                    // for lazy instantiation
+                    // return instance ?? (instance = new Servers());
+                    // for eager instantiation
+                    return instance;
                 }
             }
-        }
-        // Task 1*: Sync Servers for multi-threaded use
-        private static object syncRoot = new object();
-
-        public static Servers InstanceSync
-        {
-            get
-            {
-                lock (syncRoot)
-                {
-                    return instance ?? (instance = new Servers());
-                }
-            }
-        }
-
-        // Task 2*: Change singleton type from lazy to eager
-        private static readonly Servers eagerInstance = new Servers();
-
-        public static Servers EagerInstance
-        {
-            get { return eagerInstance; }
         }
 
         public bool AddServer(string server)
@@ -77,10 +62,5 @@ namespace ServersLib
             return serverList.Where(s => s.StartsWith("https://")).ToList();
         }
 
-
-
-
-
     }
-
 }
